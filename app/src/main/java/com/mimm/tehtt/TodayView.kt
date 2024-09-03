@@ -1,11 +1,13 @@
 package com.mimm.tehtt
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -19,43 +21,60 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mimm.tehtt.models.Lesson
 import com.mimm.tehtt.models.getPeriodOfBreak
 import com.mimm.tehtt.models.getPeriodOfLesson
+import com.mimm.tehtt.models.getTodayDay
 import com.mimm.tehtt.ui.theme.TehTTTheme
 import kotlinx.coroutines.delay
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun TodayView() {
     Column(Modifier.fillMaxSize()) {
+        val todays = getTodayDay()
+        Text(text = LocalDate.now().format(DateTimeFormatter.ofPattern( "d MMMM")), fontSize = 24.sp, modifier = Modifier.padding(24.dp, 16.dp).fillMaxWidth(), textAlign = TextAlign.Center)
         LazyColumn(
             Modifier
                 .fillMaxSize()
-                .padding(24.dp)
+                .padding(24.dp, 16.dp)
         ) {
-
+            items(todays) { lesson: Lesson ->
+                LessonLine(lesson = lesson, modifier = Modifier.padding(0.dp, 8.dp))
+                if (todays.last() != lesson) {
+                    BreakLine(number = lesson.number, modifier = Modifier.padding(0.dp, 8.dp))
+                }
+            }
         }
     }
 }
 
 @Composable
-fun LessonLine(modifier: Modifier = Modifier, lesson: Lesson) {
+fun LessonLine(modifier: Modifier = Modifier, lesson: Lesson, timeline: Boolean = true) {
     Card(onClick = { /*TODO*/ }, modifier = modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                text = "Пара №${lesson.number}",
+                text = lesson.name,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)
             )
-            Text(text = lesson.name)
-            Text(text = lesson.room)
-            Timeline(times = getPeriodOfLesson(lesson.number))
+            Row(Modifier.fillMaxWidth()) {
+                Text(text = lesson.room)
+                Text(
+                    text = lesson.teacher,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End
+                )
+            }
+            if (timeline)
+                Timeline(times = getPeriodOfLesson(lesson.number))
         }
     }
 }
@@ -66,9 +85,9 @@ fun BreakLine(modifier: Modifier = Modifier, number: Int) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 text = "Перемена",
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)
+                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp)
             )
             Timeline(times = getPeriodOfBreak(number))
         }
@@ -83,10 +102,11 @@ fun Timeline(modifier: Modifier = Modifier, times: Pair<LocalTime, LocalTime>) {
         val now = LocalTime.now()
         LaunchedEffect(key1 = currentProgress) {
             if (now.isAfter(times.first) && now.isBefore(times.second)) {
-                val totalDelta = times.second.toSecondOfDay() - times.second.toSecondOfDay()
+                val totalDelta = times.second.toSecondOfDay() - times.first.toSecondOfDay()
                 while (LocalTime.now().toSecondOfDay() < times.second.toSecondOfDay()) {
                     currentProgress = ((LocalTime.now()
                         .toSecondOfDay() - times.first.toSecondOfDay()).toFloat() / totalDelta.toFloat())
+                    Log.i("progress", "Timeline: $currentProgress")
                     delay(250)
                 }
             }

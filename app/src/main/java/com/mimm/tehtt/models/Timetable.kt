@@ -3,9 +3,11 @@ package com.mimm.tehtt.models
 import java.time.LocalDate
 
 
-var Timetable = listOf<List<Lesson>>()
+var Timetable = arrayOf<Array<Lesson>>()
 
-fun getTodayDay() : List<Lesson>{
+fun getTodayDay(): Array<Lesson> {
+    if (Timetable.isEmpty())
+        return arrayOf<Lesson>()
     val today = Timetable[LocalDate.now().dayOfWeek.value - 1]
     return today
 }

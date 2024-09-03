@@ -24,13 +24,13 @@ val SaturdayBellRings = listOf(
 )
 
 fun getPeriodOfLesson(number: Int): Pair<LocalTime, LocalTime> {
-    if(LocalDate.now().dayOfWeek != DayOfWeek.SATURDAY)
+    if (LocalDate.now().dayOfWeek != DayOfWeek.SATURDAY)
         return Pair(BellRings[number * 2 - 2], BellRings[number * 2 - 1])
     return Pair(SaturdayBellRings[number * 2 - 2], SaturdayBellRings[number * 2 - 1])
 }
 
 fun getPeriodOfBreak(number: Int): Pair<LocalTime, LocalTime> {
-    if(LocalDate.now().dayOfWeek != DayOfWeek.SATURDAY)
+    if (LocalDate.now().dayOfWeek != DayOfWeek.SATURDAY)
         return Pair(BellRings[number * 2 - 1], BellRings[number * 2])
     return Pair(SaturdayBellRings[number * 2 - 1], SaturdayBellRings[number * 2])
 }
