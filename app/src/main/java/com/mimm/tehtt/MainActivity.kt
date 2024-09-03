@@ -5,31 +5,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -70,44 +67,42 @@ fun MainView() {
         Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(24.dp, 8.dp)
             ) {
                 if (enableBackToday)
-                    Row(
-                        modifier = Modifier
-                            .background(Color.Gray.copy(0.5f), RoundedCornerShape(16.dp))
-                            .padding(6.dp, 3.dp)
-                            .clickable {
-                                forwardDays++
-                                enableBackToday = false
-                                navController.popBackStack("today", false)
-                            }, verticalAlignment = Alignment.CenterVertically
+                    IconButton(
+                        onClick = {
+                            forwardDays++
+                            enableBackToday = false
+                            navController.popBackStack("today", false)
+                        }, modifier = Modifier
+                            .padding(8.dp)
+                            .background(Color.LightGray, CircleShape)
                     ) {
                         Image(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.arrow_back),
-                            contentDescription = "", modifier = Modifier.size(16.dp)
+                            imageVector = ImageVector.vectorResource(id = R.drawable.arrow_forward),
+                            contentDescription = "", Modifier.rotate(180f)
                         )
-                        Text(text = "Следующий день", fontSize = 13.sp)
-
                     }
+
                 Spacer(Modifier.weight(1f))
 
-                Row(
-                    modifier = Modifier
-                        .background(Color.Gray.copy(0.5f), RoundedCornerShape(16.dp))
-                        .padding(6.dp, 3.dp)
-                        .clickable {
-                            forwardDays++
-                            navController.navigate("forward/$forwardDays")
-                            enableBackToday = true
-                        }, verticalAlignment = Alignment.CenterVertically
+
+                IconButton(
+                    onClick = {
+                        forwardDays++
+                        navController.navigate("forward/$forwardDays")
+                        enableBackToday = true
+                    }, modifier = Modifier
+                        .padding(8.dp)
+                        .background(Color.LightGray, CircleShape)
                 ) {
-                    Text(text = "Следующий день", fontSize = 13.sp)
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.arrow_forward),
-                        contentDescription = "", modifier = Modifier.size(16.dp)
+                        contentDescription = ""
                     )
                 }
+
 
             }
         }) { innerPadding ->

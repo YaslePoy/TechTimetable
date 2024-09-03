@@ -39,6 +39,7 @@ import java.time.format.DateTimeFormatter
 fun TodayView() {
     Column(Modifier.fillMaxSize()) {
         val todays = getTodayDay()
+        var now = LocalTime.now()
         Text(text = LocalDate.now().format(DateTimeFormatter.ofPattern( "d MMMM")), fontSize = 24.sp, modifier = Modifier.padding(24.dp, 16.dp).fillMaxWidth(), textAlign = TextAlign.Center)
         LazyColumn(
             Modifier
@@ -46,7 +47,7 @@ fun TodayView() {
                 .padding(24.dp, 16.dp)
         ) {
             items(todays) { lesson: Lesson ->
-                LessonLine(lesson = lesson, modifier = Modifier.padding(0.dp, 8.dp))
+                LessonLine(lesson = lesson, modifier = Modifier.padding(0.dp, 8.dp), short = getPeriodOfLesson(lesson.number).second.isBefore(now))
                 if (todays.last() != lesson) {
                     BreakLine(number = lesson.number, modifier = Modifier.padding(0.dp, 8.dp))
                 }
@@ -56,16 +57,16 @@ fun TodayView() {
 }
 
 @Composable
-fun LessonLine(modifier: Modifier = Modifier, lesson: Lesson, timeline: Boolean = true) {
+fun LessonLine(modifier: Modifier = Modifier, lesson: Lesson, timeline: Boolean = true, short: Boolean = false) {
     Card(onClick = { /*TODO*/ }, modifier = modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 text = lesson.name,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp)
-            )
-            Row(Modifier.fillMaxWidth()) {
+                fontWeight = FontWeight.SemiBold)
+            if(short)
+                return@Column
+            Row(Modifier.fillMaxWidth().padding(0.dp, 8.dp, 0.dp, 0.dp)) {
                 Text(text = lesson.room)
                 Text(
                     text = lesson.teacher,
